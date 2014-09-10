@@ -20,7 +20,7 @@ Drawable replyIcon = context.getResources().getDrawable(R.drawable.ic_action_rep
 // Create an action
 ActionItem reply = new ActionItem("Reply", replyIcon);
 
-// add onClickListener
+// Add onClickListener
 reply.setQuickActionClickListener(new QuickActionOnClickListener() {
     @Override
     public void onClick(ActionItem item, View view) {
@@ -28,7 +28,7 @@ reply.setQuickActionClickListener(new QuickActionOnClickListener() {
     }
 });
 
-// Adding buttons to the ActionBar
+// Add buttons to the ActionBar
 actionBar.addActionItem(reply);
 ```
 
@@ -43,10 +43,10 @@ actionBar.show(anchorView);
 final Drawable isFavoriteIcon = context.getResources().getDrawable(R.drawable.ic_action_important);
 final Drawable isNotFavoriteIcon = context.getResources().getDrawable(R.drawable.ic_action_not_important);
 
-// Creating a new ActionItem
+// Create a new ActionItem
 ActionItem favorite = new ActionItem("Add Favorite", isNotFavoriteIcon);
 
-// adding onClickListener
+// Add onClickListener
 favorite.setQuickActionClickListener(new QuickActionOnClickListener() {
     @Override
     public void onClick(ActionItem item, View view) {
@@ -56,7 +56,7 @@ favorite.setQuickActionClickListener(new QuickActionOnClickListener() {
     }
 });
 
-// onOpenListener to change visual stuff before displaying
+// Set onOpenListener to change visual stuff before displaying
 favorite.setQuickActionOnOpenListener(new QuickActionOnOpenListener() {
     @Override
     public void onOpen(ActionItem item) {

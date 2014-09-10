@@ -6,6 +6,6 @@ package net.sourcerer.quickaction;
  *
  * @author Sourcerer
  */
-public interface QuickActionOnOpenListner {
+public interface QuickActionOnOpenListener {
     public void onOpen(ActionItem item);
 }

@@ -8,6 +8,6 @@ import android.view.View;
  * @author Sourcerer
  *
  */
-public interface QuickActionOnClickListner {
+public interface QuickActionOnClickListener {
     public void onClick(ActionItem item, View view);
 }

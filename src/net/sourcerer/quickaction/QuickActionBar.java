@@ -107,8 +107,8 @@ public class QuickActionBar extends QuickActionWindow {
                     action.setSelected(!action.isSelected());
                 }
 
-                if (action.hasOnClickListner()) {
-                    action.getQuickActionClickListner().onClick(action, v);
+                if (action.hasOnClickListener()) {
+                    action.getQuickActionClickListener().onClick(action, v);
                 }
 
                 v.post(new Runnable() {
@@ -141,8 +141,8 @@ public class QuickActionBar extends QuickActionWindow {
         scroller.scrollTo(0, 0);
 
         for (ActionItem action : actions) {
-            if (action.hasOnOpenListner()) {
-                action.getQuickActionOnOpenListner().onOpen(action);
+            if (action.hasOnOpenListener()) {
+                action.getQuickActionOnOpenListener().onOpen(action);
             }
         }
 

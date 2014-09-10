@@ -26,8 +26,8 @@ public class ActionItem {
 
     private Integer minWidth = null;
 
-    private QuickActionOnClickListner onClickListner;
-    private QuickActionOnOpenListner onOnOpenListner;
+    private QuickActionOnClickListener onClickListener;
+    private QuickActionOnOpenListener onOnOpenListener;
 
     private View button;
     private ImageView imageView;
@@ -139,28 +139,28 @@ public class ActionItem {
         return minWidth;
     }
 
-    public void setQuickActionClickListner(QuickActionOnClickListner onClickListner) {
-        this.onClickListner = onClickListner;
+    public void setQuickActionClickListener(QuickActionOnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
     }
 
-    public QuickActionOnClickListner getQuickActionClickListner() {
-        return onClickListner;
+    public QuickActionOnClickListener getQuickActionClickListener() {
+        return onClickListener;
     }
 
-    public boolean hasOnClickListner() {
-        return onClickListner != null;
+    public boolean hasOnClickListener() {
+        return onClickListener != null;
     }
 
-    public void setQuickActionOnOpenListner(QuickActionOnOpenListner onOpenListner) {
-        this.onOnOpenListner = onOpenListner;
+    public void setQuickActionOnOpenListener(QuickActionOnOpenListener onOpenListener) {
+        this.onOnOpenListener = onOpenListener;
     }
 
-    public QuickActionOnOpenListner getQuickActionOnOpenListner() {
-        return onOnOpenListner;
+    public QuickActionOnOpenListener getQuickActionOnOpenListener() {
+        return onOnOpenListener;
     }
 
-    public boolean hasOnOpenListner() {
-        return onOnOpenListner != null;
+    public boolean hasOnOpenListener() {
+        return onOnOpenListener != null;
     }
 
     /**

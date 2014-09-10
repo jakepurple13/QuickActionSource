@@ -20,8 +20,8 @@ Drawable replyIcon = context.getResources().getDrawable(R.drawable.ic_action_rep
 // Create an action
 ActionItem reply = new ActionItem("Reply", replyIcon);
 
-// add onClickListner
-reply.setQuickActionClickListner(new QuickActionOnClickListner() {
+// add onClickListener
+reply.setQuickActionClickListener(new QuickActionOnClickListener() {
     @Override
     public void onClick(ActionItem item, View view) {
         // Do something
@@ -37,17 +37,17 @@ actionBar.addActionItem(reply);
 actionBar.show(anchorView);
 ```
 
-#### Using onOpenListner to change displayed text and icon
+#### Using onOpenListener to change displayed text and icon
 ```
 // Fetch icons
-final Drawable favoriteIcon = context.getResources().getDrawable(R.drawable.ic_action_important);
-final Drawable noFavoriteIcon = context.getResources().getDrawable(R.drawable.ic_action_not_important);
+final Drawable isFavoriteIcon = context.getResources().getDrawable(R.drawable.ic_action_important);
+final Drawable isNotFavoriteIcon = context.getResources().getDrawable(R.drawable.ic_action_not_important);
 
-// Example with onClickListner and changing display depending the selected user
-ActionItem favorite = new ActionItem("Favorite", noFavoriteIcon);
+// Creating a new ActionItem
+ActionItem favorite = new ActionItem("Add Favorite", isNotFavoriteIcon);
 
-// onClickListner
-favorite.setQuickActionClickListner(new QuickActionOnClickListner() {
+// adding onClickListener
+favorite.setQuickActionClickListener(new QuickActionOnClickListener() {
     @Override
     public void onClick(ActionItem item, View view) {
         if (selectedUser != null) {
@@ -56,17 +56,17 @@ favorite.setQuickActionClickListner(new QuickActionOnClickListner() {
     }
 });
 
-// onOpenListner to change visual stuff before displaying
-favorite.setQuickActionOnOpenListner(new QuickActionOnOpenListner() {
+// onOpenListener to change visual stuff before displaying
+favorite.setQuickActionOnOpenListener(new QuickActionOnOpenListener() {
     @Override
     public void onOpen(ActionItem item) {
         if (selectedUser != null && selectedUser.isFavorite()) {
-            item.setIcon(favoriteIcon);
+            item.setIcon(isFavoriteIcon);
             item.setTitle("Unfavorite");
         }
         else {
-            item.setIcon(noFavoriteIcon);
-            item.setTitle("Favorite");
+            item.setIcon(isNotFavoriteIcon);
+            item.setTitle("Add Favorite");
         }
     }
 });

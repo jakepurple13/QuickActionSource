@@ -39,8 +39,10 @@ public class QuickActionBar extends QuickActionWindow {
 
     // Default orientation is bottom
     private int orientation = BOTTOM;
-    // null = no maxWidth
+    // No maximum width set = null
     private Integer maxWidth = null;
+    // Using screen width forces the bar to expand the full screen
+    private boolean useScreenWidth = false;
     // Buttons list
     private List<ActionItem> actions = new ArrayList<ActionItem>();
 
@@ -75,6 +77,17 @@ public class QuickActionBar extends QuickActionWindow {
         maxWidth = width;
     }
 
+    /**
+     * Force the bar to use screen width will override the max width value.
+     */
+    public void useScreenWidth(boolean useScreenWidth) {
+        this.useScreenWidth = useScreenWidth;
+    }
+
+    /**
+     * Set position to anchor.
+     * @param orientation options: TOP, BOTTOM, LEFT, RIGHT
+     */
     public void setOrientation(int orientation) {
         this.orientation = orientation;
     }
@@ -146,40 +159,32 @@ public class QuickActionBar extends QuickActionWindow {
             }
         }
 
-        int[] location = new int[2];
-        anchor.getLocationOnScreen(location);
+        final Point screenSize = getScreenSize();
 
-        Rect anchorRect = new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1] + anchor.getHeight());
-
-        content.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-
-        int contentWidth = content.getMeasuredWidth();
-        int contentHeight  = content.getMeasuredHeight();
-
-        Point screenSize = getScreenSize();
-
-        // Reduce popup to screen size
-        if (contentWidth > screenSize.x) {
-            contentWidth = screenSize.x;
-        }
-
-        // reduce size so its still show the anchor
-        if (orientation == LEFT || orientation == RIGHT) {
-            if (contentWidth > screenSize.x - anchor.getWidth()) {
-                contentWidth = screenSize.x - anchor.getWidth();
-            }
-        }
-
-        if (maxWidth != null && maxWidth < contentWidth) {
-            contentWidth = maxWidth;
-        }
+        // Calculate dialogs size
+        Point contentSize = calculateContentSize(anchor, screenSize);
 
         // Force maximum size
-        popupWindow.setWidth(contentWidth);
+        popupWindow.setWidth(contentSize.x);
+
+        // Calculate position and set arrow
+        Point position = calculatePosition(anchor, contentSize, screenSize);
+
+        popupWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, position.x, position.y);
+    }
+
+    private Point calculatePosition(View anchor, Point contentSize, Point screenSize) {
+
+        final int contentWidth = contentSize.x;
+        final int contentHeight = contentSize.y;
 
         int posX = 0;
         int posY = 0;
         int arrowMargin = 0;
+
+        int[] location = new int[2];
+        anchor.getLocationOnScreen(location);
+        final Rect anchorRect = new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1] + anchor.getHeight());
 
         // Hide arrows
         topArrow.setVisibility(View.INVISIBLE);
@@ -202,7 +207,6 @@ public class QuickActionBar extends QuickActionWindow {
                     showArrow(topArrow, arrowMargin);
                     setPopupAnimation(false, arrowMargin, contentWidth);
                 }
-
                 break;
             case BOTTOM:
                 // Popup is centered on the anchor by moving left
@@ -219,7 +223,6 @@ public class QuickActionBar extends QuickActionWindow {
                     showArrow(topArrow, arrowMargin);
                     setPopupAnimation(false, arrowMargin, contentWidth);
                 }
-
                 break;
             case LEFT:
                 posX = anchorRect.left - contentWidth;
@@ -233,8 +236,37 @@ public class QuickActionBar extends QuickActionWindow {
                 break;
         }
 
+        return new Point(posX, posY);
+    }
 
-        popupWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, posX, posY);
+    private Point calculateContentSize(View anchor, Point screenSize) {
+        content.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+
+        int contentWidth = content.getMeasuredWidth();
+        int contentHeight  = content.getMeasuredHeight();
+
+        // Reduce popup to screen size
+        if (contentWidth > screenSize.x) {
+            contentWidth = screenSize.x;
+        }
+
+        // Reduce size so it still show the anchor
+        if (orientation == LEFT || orientation == RIGHT) {
+            if (contentWidth > screenSize.x - anchor.getWidth()) {
+                contentWidth = screenSize.x - anchor.getWidth();
+            }
+        }
+
+        // Set max width, if set
+        if (maxWidth != null && maxWidth < contentWidth) {
+            contentWidth = maxWidth;
+        }
+
+        if (useScreenWidth) {
+            contentWidth = screenSize.x;
+        }
+
+        return new Point(contentWidth, contentHeight);
     }
 
     private void setPopupAnimation(boolean onTop, int arrowMargin, int contentWidth) {

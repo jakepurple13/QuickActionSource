@@ -45,6 +45,8 @@ public class QuickActionBar extends QuickActionWindow {
     private boolean useScreenWidth = false;
     // Buttons list
     private List<ActionItem> actions = new ArrayList<ActionItem>();
+    //
+    private View boundaries;
 
     public QuickActionBar(Context context) {
         this(context, R.layout.qa_dialog);
@@ -82,6 +84,14 @@ public class QuickActionBar extends QuickActionWindow {
      */
     public void useScreenWidth(boolean useScreenWidth) {
         this.useScreenWidth = useScreenWidth;
+    }
+
+    /**
+     * Restricts the dialog boundaries to the given views size.
+     * The anchor on show(anchor) has to be inside the restricting view.
+     */
+    public void useRestriction(View boundaries) {
+        this.boundaries = boundaries;
     }
 
     /**
@@ -159,7 +169,12 @@ public class QuickActionBar extends QuickActionWindow {
             }
         }
 
-        final Point screenSize = getScreenSize();
+        Point screenSize = getScreenSize();
+
+        // if boundaries are given, take them as screen size
+        if (boundaries != null) {
+            screenSize = new Point(boundaries.getWidth(), boundaries.getHeight());
+        }
 
         // Calculate dialogs size
         Point contentSize = calculateContentSize(anchor, screenSize);
@@ -252,18 +267,17 @@ public class QuickActionBar extends QuickActionWindow {
 
         // Reduce size so it still show the anchor
         if (orientation == LEFT || orientation == RIGHT) {
-            if (contentWidth > screenSize.x - anchor.getWidth()) {
+            if (contentWidth > screenSize.x - anchor.getWidth() || useScreenWidth) {
                 contentWidth = screenSize.x - anchor.getWidth();
             }
+        }
+        else if (useScreenWidth) {
+            contentWidth = screenSize.x;
         }
 
         // Set max width, if set
         if (maxWidth != null && maxWidth < contentWidth) {
             contentWidth = maxWidth;
-        }
-
-        if (useScreenWidth) {
-            contentWidth = screenSize.x;
         }
 
         return new Point(contentWidth, contentHeight);
@@ -307,6 +321,13 @@ public class QuickActionBar extends QuickActionWindow {
         // If pops the screen size, move it more left
         if (posX + contentWidth > screenSizeX) {
             posX = Math.max(posX - (posX + contentWidth - screenSizeX), 0);
+        }
+
+        if (boundaries != null) {
+            // Push position into boundaries
+            if (posX < boundaries.getLeft()) {
+                posX = boundaries.getLeft();
+            }
         }
 
         return posX;

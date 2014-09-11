@@ -6,6 +6,11 @@
 * Working on smartphones and tablets
 * Added graphics matching androids holo.light theme
 
+## Example
+See the example app for a proper evaluation [[download](examples/QuickActionSourceExample.apk)]
+
+There are two different layouts for smartphones and tablets (>720p).
+
 ## How to Use
 
 #### Setup

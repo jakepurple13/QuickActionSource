@@ -1,5 +1,6 @@
 package net.sourcerer.quickaction;
 
+import net.sourcerer.android.R;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,6 +19,8 @@ import android.widget.PopupWindow;
  */
 public class QuickActionWindow {
 
+    protected LayoutInflater inflater;
+
     protected Context context;
     protected PopupWindow popupWindow;
     protected WindowManager windowManager;
@@ -25,6 +28,7 @@ public class QuickActionWindow {
 
     public QuickActionWindow(Context context) {
         this.context = context;
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         popupWindow = new PopupWindow(context);
         popupWindow.setBackgroundDrawable(new BitmapDrawable());
@@ -76,8 +80,7 @@ public class QuickActionWindow {
     }
 
     public View setContentView(int layoutResID) {
-        LayoutInflater inflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View content = inflator.inflate(layoutResID, null);
+        View content = inflater.inflate(layoutResID, null);
         setContentView(content);
 
         return content;
@@ -95,4 +98,33 @@ public class QuickActionWindow {
         popupWindow.dismiss();
     }
 
+    /**
+     * Determine the the correct popup animation.
+     */
+    protected void setPopupAnimation(boolean onTop, int arrowMargin, int contentWidth) {
+        if ((float)arrowMargin / (float)contentWidth < 0.30f) {
+            if (onTop) {
+                popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Left);
+            }
+            else {
+                popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Left);
+            }
+        }
+        else if ((float)arrowMargin / (float)contentWidth < 0.70f) {
+            if (onTop) {
+                popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Center);
+            }
+            else {
+                popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Center);
+            }
+        }
+        else {
+            if (onTop) {
+                popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Right);
+            }
+            else {
+                popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Right);
+            }
+        }
+    }
 }

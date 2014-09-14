@@ -1,5 +1,6 @@
 package net.sourcerer.quickaction;
 
+import net.sourcerer.android.R;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -18,6 +19,8 @@ import android.widget.TextView;
  */
 public class ActionItem {
 
+    private int layoutId;
+
     private Drawable icon;
     private String title;
 
@@ -33,9 +36,22 @@ public class ActionItem {
     private ImageView imageView;
     private TextView textView;
 
+    public ActionItem(String title) {
+        this(title, null);
+    }
+
+    public ActionItem(Drawable icon) {
+        this(null, icon);
+    }
+
     public ActionItem(String title, Drawable icon) {
+        this(title, icon, R.layout.qa_action_item);
+    }
+
+    public ActionItem(String title, Drawable icon, int layoutId) {
         this.title = title;
         this.icon = icon;
+        this.layoutId = layoutId;
     }
 
     protected void init(final View button) {
@@ -164,7 +180,7 @@ public class ActionItem {
     }
 
     /**
-     * Can only return isEnabled after beeing added to a QuickActionBar
+     * Can only be used after beeing added to a QuickActionBar
      */
     public void setEnabled(boolean value) {
         button.setEnabled(value);
@@ -172,21 +188,23 @@ public class ActionItem {
 
     /**
      * Can only return isEnabled after beeing added to a QuickActionBar
-     * @return
      */
     public boolean isEnabled() {
         return button.isEnabled();
     }
 
     /**
-     * Can only return isEnabled after beeing added to a QuickActionBar
+     * Can only be used after beeing added to a QuickActionBar
      */
     public void setVisibility(int value) {
         button.setVisibility(value);
     }
 
+    public int getLayoutId() {
+        return layoutId;
+    }
+
     protected View getView() {
         return button;
     }
-
 }

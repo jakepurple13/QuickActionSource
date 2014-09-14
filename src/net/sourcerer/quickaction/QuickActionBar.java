@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
@@ -31,8 +30,7 @@ public class QuickActionBar extends QuickActionWindow {
     public static final int RIGHT = 3;
     public static final int LEFT = 4;
 
-    private LayoutInflater inflater;
-    private ViewGroup buttonView;
+    private ViewGroup buttonList;
     private ImageView topArrow;
     private ImageView bottomArrow;
     private HorizontalScrollView scroller;
@@ -55,18 +53,16 @@ public class QuickActionBar extends QuickActionWindow {
     public QuickActionBar(Context context, int layoutId) {
         super(context);
 
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         View container = setContentView(layoutId);
 
-        // Fetching Ids for view elements
+        // Fetching Ids for view elements, changed identifier at the layout will lead to null pointer here!
         Resources res = container.getResources();
-        int buttonViewId = res.getIdentifier("qa_buttons", "id", container.getContext().getPackageName());
+        int buttonListId = res.getIdentifier("qa_button_list", "id", container.getContext().getPackageName());
         int topArrowId = res.getIdentifier("qa_arrow_up", "id", container.getContext().getPackageName());
         int bottomArrowId = res.getIdentifier("qa_arrow_down", "id", container.getContext().getPackageName());
         int scrollerId = res.getIdentifier("qa_scroller", "id", container.getContext().getPackageName());
 
-        buttonView = (ViewGroup) container.findViewById(buttonViewId);
+        buttonList = (ViewGroup) container.findViewById(buttonListId);
         topArrow = (ImageView) container.findViewById(topArrowId);
         bottomArrow = (ImageView) container.findViewById(bottomArrowId);
         scroller = (HorizontalScrollView) container.findViewById(scrollerId);
@@ -121,7 +117,7 @@ public class QuickActionBar extends QuickActionWindow {
     public void addActionItem(final ActionItem action) {
         actions.add(action);
 
-        View button = inflater.inflate(R.layout.qa_action_item, null);
+        View button = inflater.inflate(action.getLayoutId(), null);
 
         button.setOnClickListener(new OnClickListener() {
             @Override
@@ -145,7 +141,7 @@ public class QuickActionBar extends QuickActionWindow {
             }
         });
 
-        buttonView.addView(button, buttonView.getChildCount() - 1);
+        buttonList.addView(button, buttonList.getChildCount() - 1);
 
         action.init(button);
     }
@@ -281,33 +277,6 @@ public class QuickActionBar extends QuickActionWindow {
         }
 
         return new Point(contentWidth, contentHeight);
-    }
-
-    private void setPopupAnimation(boolean onTop, int arrowMargin, int contentWidth) {
-        if ((float)arrowMargin / (float)contentWidth < 0.30f) {
-            if (onTop) {
-                popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Left);
-            }
-            else {
-                popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Left);
-            }
-        }
-        else if ((float)arrowMargin / (float)contentWidth < 0.70f) {
-            if (onTop) {
-                popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Center);
-            }
-            else {
-                popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Center);
-            }
-        }
-        else {
-            if (onTop) {
-                popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Right);
-            }
-            else {
-                popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Right);
-            }
-        }
     }
 
     private void showArrow(ImageView arrow, int margin) {

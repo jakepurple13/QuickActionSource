@@ -24,19 +24,13 @@ import android.widget.ImageView;
  */
 public class QuickActionBar extends QuickActionWindow {
 
-    // Orientation values
-    public static final int TOP = 1;
-    public static final int BOTTOM = 2;
-    public static final int RIGHT = 3;
-    public static final int LEFT = 4;
-
     private ViewGroup buttonList;
     private ImageView topArrow;
     private ImageView bottomArrow;
     private HorizontalScrollView scroller;
 
     // Default orientation is bottom
-    private int orientation = BOTTOM;
+    private PopUpAlignment alignment = PopUpAlignment.BOTTOM;
     // No maximum width set = null
     private Integer maxWidth = null;
     // Using screen width forces the bar to expand the full screen
@@ -91,11 +85,11 @@ public class QuickActionBar extends QuickActionWindow {
     }
 
     /**
-     * Set position to anchor.
-     * @param orientation options: TOP, BOTTOM, LEFT, RIGHT
+     * Set alignment to anchor.
+     * @param alignment options: TOP, BOTTOM, LEFT, RIGHT
      */
-    public void setOrientation(int orientation) {
-        this.orientation = orientation;
+    public void setAlignment(PopUpAlignment alignment) {
+        this.alignment = alignment;
     }
 
     /**
@@ -178,72 +172,78 @@ public class QuickActionBar extends QuickActionWindow {
         // Force maximum size
         popupWindow.setWidth(contentSize.x);
 
+        int[] location = new int[2];
+        anchor.getLocationOnScreen(location);
+        final Rect anchorRect = new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1] + anchor.getHeight());
+
         // Calculate position and set arrow
-        Point position = calculatePosition(anchor, contentSize, screenSize);
+        Point position = calculatePosition(anchorRect, contentSize, screenSize);
+
+        // Hide arrows
+        topArrow.setVisibility(View.INVISIBLE);
+        bottomArrow.setVisibility(View.INVISIBLE);
+
+        // Set animation style and arrow position
+        if (alignment.isHorizontal() == false) {
+            boolean isOnTop = anchorRect.top > position.y;
+
+            int arrowMargin = anchorRect.centerX() - position.x;
+            setVerticalPopupAnimation(isOnTop, arrowMargin, contentSize.x);
+
+            if (isOnTop) {
+                showArrow(bottomArrow, arrowMargin);
+            }
+            else {
+                showArrow(topArrow, arrowMargin);
+            }
+        }
+        else if (alignment == PopUpAlignment.LEFT) {
+            popupWindow.setAnimationStyle(R.style.Animations_Right);
+        }
+        else if (alignment == PopUpAlignment.RIGHT) {
+            popupWindow.setAnimationStyle(R.style.Animations_Left);
+        }
 
         popupWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, position.x, position.y);
     }
 
-    private Point calculatePosition(View anchor, Point contentSize, Point screenSize) {
+    private Point calculatePosition(Rect anchorRect, Point contentSize, Point screenSize) {
 
         final int contentWidth = contentSize.x;
         final int contentHeight = contentSize.y;
 
         int posX = 0;
         int posY = 0;
-        int arrowMargin = 0;
 
-        int[] location = new int[2];
-        anchor.getLocationOnScreen(location);
-        final Rect anchorRect = new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1] + anchor.getHeight());
-
-        // Hide arrows
-        topArrow.setVisibility(View.INVISIBLE);
-        bottomArrow.setVisibility(View.INVISIBLE);
-
-        // Set position
-        switch(orientation) {
+        // Calculate popup position by alignment and size
+        switch(alignment) {
             case TOP:
-                // Popup is centered on the anchor by moving left
-                posX = calculatePositionX(anchorRect.centerX(), contentWidth, screenSize.x);
-
-                arrowMargin = anchorRect.centerX() - posX;
+                // Popup is centered on the anchor by moving left to fit into the boundaries
+                posX = getHorizontalPosition(anchorRect.centerX(), contentWidth, screenSize.x);
                 if (contentHeight < anchorRect.top) {
                     posY = anchorRect.top - contentHeight;
-                    showArrow(bottomArrow, arrowMargin);
-                    setPopupAnimation(true, arrowMargin, contentWidth);
                 }
                 else {
                     posY = anchorRect.bottom;
-                    showArrow(topArrow, arrowMargin);
-                    setPopupAnimation(false, arrowMargin, contentWidth);
                 }
                 break;
             case BOTTOM:
-                // Popup is centered on the anchor by moving left
-                posX = calculatePositionX(anchorRect.centerX(), contentWidth, screenSize.x);
-
-                arrowMargin = anchorRect.centerX() - posX;
+                // Popup is centered on the anchor by moving left to fit into the boundaries
+                posX = getHorizontalPosition(anchorRect.centerX(), contentWidth, screenSize.x);
                 if (contentHeight > screenSize.y - anchorRect.bottom) {
                     posY = anchorRect.top - contentHeight;
-                    showArrow(bottomArrow, arrowMargin);
-                    setPopupAnimation(true, arrowMargin, contentWidth);
                 }
                 else {
                     posY = anchorRect.bottom;
-                    showArrow(topArrow, arrowMargin);
-                    setPopupAnimation(false, arrowMargin, contentWidth);
                 }
                 break;
             case LEFT:
                 posX = anchorRect.left - contentWidth;
                 posY = anchorRect.centerY() - (contentHeight / 2);
-                popupWindow.setAnimationStyle(R.style.Animations_Right);
                 break;
             case RIGHT:
                 posX = anchorRect.right;
                 posY = anchorRect.centerY() - (contentHeight / 2);
-                popupWindow.setAnimationStyle(R.style.Animations_Left);
                 break;
         }
 
@@ -262,7 +262,7 @@ public class QuickActionBar extends QuickActionWindow {
         }
 
         // Reduce size so it still show the anchor
-        if (orientation == LEFT || orientation == RIGHT) {
+        if (alignment == PopUpAlignment.LEFT || alignment == PopUpAlignment.RIGHT) {
             if (contentWidth > screenSize.x - anchor.getWidth() || useScreenWidth) {
                 contentWidth = screenSize.x - anchor.getWidth();
             }
@@ -285,7 +285,7 @@ public class QuickActionBar extends QuickActionWindow {
         param.leftMargin = margin - arrow.getMeasuredWidth() / 2;
     }
 
-    private int calculatePositionX(int centerX, int contentWidth, int screenSizeX) {
+    private int getHorizontalPosition(int centerX, int contentWidth, int screenSizeX) {
         int posX = Math.max(centerX - contentWidth / 2, 0);
         // If pops the screen size, move it more left
         if (posX + contentWidth > screenSizeX) {

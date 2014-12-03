@@ -31,6 +31,7 @@ public class QuickActionWindow {
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         popupWindow = new PopupWindow(context);
+        // TODO: Find a not deprecated way
         popupWindow.setBackgroundDrawable(new BitmapDrawable());
 
         // Dismiss window on any touch outside
@@ -99,9 +100,9 @@ public class QuickActionWindow {
     }
 
     /**
-     * Determine the the correct popup animation.
+     * Determine the the correct vertical popup animation.
      */
-    protected void setPopupAnimation(boolean onTop, int arrowMargin, int contentWidth) {
+    protected void setVerticalPopupAnimation(boolean onTop, int arrowMargin, int contentWidth) {
         if ((float)arrowMargin / (float)contentWidth < 0.30f) {
             if (onTop) {
                 popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Left);

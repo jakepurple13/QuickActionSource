@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -204,6 +205,7 @@ public class QuickActionBar extends QuickActionWindow {
             popupWindow.setAnimationStyle(R.style.Animations_Left);
         }
 
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, position.x, position.y);
     }
 

@@ -1,3 +1,12 @@
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.android.tools.build:gradle:1.5.0'
+	}
+}
+
 apply plugin: 'com.android.library'
 
 android {
@@ -6,7 +15,7 @@ android {
 
 	defaultConfig {
 		minSdkVersion 13
-		targetSdkVersion 23
+		targetSdkVersion 14
 	}
 
 	sourceSets {
